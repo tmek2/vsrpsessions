@@ -69,20 +69,8 @@ const setTicketTypeModal = require('./modals/dash/setTicketTypeModal.js');
 // Removed: help, userinfo, serverinfo, avatar, coinflip, suggestion
 // ER:LC private server logger
 const erlcLog = require('./erlclog.js');
-// ER:LC on-demand commands (new prefixed set)
-const viewlogs = require('./commands/viewlogs.js');
-const erlc_info = require('./commands/erlc_info.js');
-const erlc_staff = require('./commands/erlc_staff.js');
-const erlc_kills = require('./commands/erlc_kills.js');
-const erlc_playerlogs = require('./commands/erlc_playerlogs.js');
-const erlc_commandlogs = require('./commands/erlc_commandlogs.js');
-const erlc_bans = require('./commands/erlc_bans.js');
-const erlc_players = require('./commands/erlc_players.js');
-const erlc_teams = require('./commands/erlc_teams.js');
-const erlc_vehicles = require('./commands/erlc_vehicles.js');
-const erlc_message = require('./commands/erlc_message.js');
-const erlc_hint = require('./commands/erlc_hint.js');
-const erlc_command = require('./commands/erlc_command.js');
+// ER:LC main command with subcommands
+const erlc = require('./commands/erlc.js');
 const { initPrefix } = require('./prefix.js');
 const sessionStatusPanel = require('./panels/sessionStatusPanel.js');
 // Ticket panel command
@@ -137,20 +125,8 @@ client.config = { PRC_KEY };
       say.data,
       reminder.data,
       dash.data,
-      // ER:LC on-demand (new prefixed set)
-      viewlogs.data,
-      erlc_info.data,
-      erlc_staff.data,
-      erlc_kills.data,
-      erlc_playerlogs.data,
-      erlc_commandlogs.data,
-      erlc_bans.data,
-      erlc_players.data,
-      erlc_teams.data,
-      erlc_vehicles.data,
-      erlc_message.data,
-      erlc_hint.data,
-      erlc_command.data,
+      // ER:LC consolidated
+      erlc.data,
       // Put sessions last
       sessions.data
     ]);
@@ -248,44 +224,8 @@ client.on('interactionCreate', async (interaction) => {
         const say = require('./commands/say.js');
         await say.execute(interaction, client);
         await logCommandUsage();
-      } else if (interaction.commandName === 'viewlogs') {
-        await viewlogs.execute(interaction, client);
-        await logCommandUsage();
-      } else if (interaction.commandName === 'erlc_info') {
-        await erlc_info.execute(interaction, client);
-        await logCommandUsage();
-      } else if (interaction.commandName === 'erlc_staff') {
-        await erlc_staff.execute(interaction, client);
-        await logCommandUsage();
-      } else if (interaction.commandName === 'erlc_kills') {
-        await erlc_kills.execute(interaction, client);
-        await logCommandUsage();
-      } else if (interaction.commandName === 'erlc_playerlogs') {
-        await erlc_playerlogs.execute(interaction, client);
-        await logCommandUsage();
-      } else if (interaction.commandName === 'erlc_commandlogs') {
-        await erlc_commandlogs.execute(interaction, client);
-        await logCommandUsage();
-      } else if (interaction.commandName === 'erlc_bans') {
-        await erlc_bans.execute(interaction, client);
-        await logCommandUsage();
-      } else if (interaction.commandName === 'erlc_players') {
-        await erlc_players.execute(interaction, client);
-        await logCommandUsage();
-      } else if (interaction.commandName === 'erlc_teams') {
-        await erlc_teams.execute(interaction, client);
-        await logCommandUsage();
-      } else if (interaction.commandName === 'erlc_vehicles') {
-        await erlc_vehicles.execute(interaction, client);
-        await logCommandUsage();
-      } else if (interaction.commandName === 'erlc_message') {
-        await erlc_message.execute(interaction, client);
-        await logCommandUsage();
-      } else if (interaction.commandName === 'erlc_hint') {
-        await erlc_hint.execute(interaction, client);
-        await logCommandUsage();
-      } else if (interaction.commandName === 'erlc_command') {
-        await erlc_command.execute(interaction, client);
+      } else if (interaction.commandName === 'erlc') {
+        await erlc.execute(interaction, client);
         await logCommandUsage();
       }
       return;
