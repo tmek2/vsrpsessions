@@ -69,22 +69,13 @@ async function fetchStats(client) {
   try {
     const commonHeaders = { 'server-key': prcKey, 'Accept': '*/*' };
     const serverRes = await axios.get('https://api.policeroleplay.community/v1/server/', { headers: commonHeaders, timeout: 10000 });
-    const staffRes = await axios.get('https://api.policeroleplay.community/v1/server/staff', { headers: commonHeaders, timeout: 10000 }).catch(() => ({ data: [] }));
+    const playersRes = await axios.get('https://api.policeroleplay.community/v1/server/players', { headers: commonHeaders, timeout: 10000 }).catch(() => ({ data: [] }));
     const queueRes = await axios.get('https://api.policeroleplay.community/v1/server/queue', { headers: commonHeaders, timeout: 10000 }).catch(() => ({ data: [] }));
     const server = serverRes.data || {};
-    let playersCount = Number(server.CurrentPlayers ?? 0);
-    if (!playersCount || Number.isNaN(playersCount)) {
-      try {
-        const playersRes = await axios.get('https://api.policeroleplay.community/v1/server/players', { headers: commonHeaders, timeout: 10000 });
-        const playersArr = Array.isArray(playersRes.data) ? playersRes.data : [];
-        playersCount = playersArr.length;
-      } catch {}
-    }
-    const staffData = staffRes?.data ?? [];
-    let staffCount = 0;
-    if (Array.isArray(staffData)) staffCount = staffData.length;
-    else if (Array.isArray(staffData.Staff)) staffCount = staffData.Staff.length;
-    else staffCount = Number(staffData.Online ?? staffData.Count ?? staffData.length ?? 0);
+    const playersArr = Array.isArray(playersRes.data) ? playersRes.data : [];
+    let playersCount = Number(server.CurrentPlayers ?? playersArr.length ?? 0);
+    if (!playersCount || Number.isNaN(playersCount)) playersCount = playersArr.length || 0;
+    const staffCount = playersArr.filter(p => p.Permission && p.Permission !== 'Normal').length;
 
     const queueData = queueRes?.data ?? [];
     let queueCount = 0;
