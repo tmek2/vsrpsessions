@@ -13,6 +13,7 @@ function envRole(sub) {
     kills: process.env.ERLC_KILLS_REQUIRED_ROLE_ID,
     playerlogs: process.env.ERLC_PLAYERLOGS_REQUIRED_ROLE_ID,
     commandlogs: process.env.ERLC_COMMANDLOGS_REQUIRED_ROLE_ID,
+    viewlogs: process.env.VIEWLOGS_REQUIRED_ROLE_ID,
     bans: process.env.ERLC_BANS_REQUIRED_ROLE_ID,
     players: process.env.ERLC_PLAYERS_REQUIRED_ROLE_ID,
     teams: process.env.ERLC_TEAMS_REQUIRED_ROLE_ID,
@@ -33,6 +34,9 @@ module.exports = {
     .addSubcommand(s => s.setName('kills').setDescription('See kill logs'))
     .addSubcommand(s => s.setName('playerlogs').setDescription('See player join/leave logs'))
     .addSubcommand(s => s.setName('commandlogs').setDescription('See command logs'))
+    .addSubcommand(s => s.setName('viewlogs').setDescription('Command logs for a specific moderator')
+      .addStringOption(o => o.setName('user').setDescription('Roblox username').setRequired(true))
+    )
     .addSubcommand(s => s.setName('bans').setDescription('Filter bans')
       .addStringOption(o => o.setName('username').setDescription('Username to filter').setRequired(false))
       .addStringOption(o => o.setName('user_id').setDescription('User ID to filter').setRequired(false))
@@ -104,6 +108,20 @@ module.exports = {
         const embed = new EmbedBuilder().setTitle('Command Logs').setColor('#2b2d31');
         const lines = logs.sort((a,b) => b.Timestamp - a.Timestamp).slice(0, 50).map(l => `> [${l.Player.split(':')[0]}](https://roblox.com/users/${l.Player.split(':')[1]}/profile) ran \`${l.Command}\` • <t:${Number(l.Timestamp)}:R>`);
         embed.setDescription(lines.length ? lines.join('\n') : '> No command logs found.');
+        await interaction.editReply({ embeds: [embed] });
+      } else if (sub === 'viewlogs') {
+        const username = interaction.options.getString('user');
+        const res = await prc.get('/commandlogs');
+        const arr = Array.isArray(res.data) ? res.data : [];
+        const lines = [];
+        for (const it of arr) {
+          const name = String(it.Player || '').split(':')[0];
+          if (String(name).toLowerCase() === String(username).toLowerCase()) {
+            lines.push(`> [${name}](https://roblox.com/users/${String(it.Player).split(':')[1]}/profile) ran \`${it.Command}\` • <t:${Number(it.Timestamp)}:R>`);
+          }
+        }
+        const embed = new EmbedBuilder().setTitle(`Command Logs for ${username}`).setColor('#2b2d31');
+        embed.setDescription(lines.length ? lines.slice(0, 50).join('\n') : `> No logs matched for ${username}.`);
         await interaction.editReply({ embeds: [embed] });
       } else if (sub === 'bans') {
         const username = interaction.options.getString('username');
