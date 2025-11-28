@@ -179,7 +179,7 @@ module.exports = {
                     embeds: [
                         new EmbedBuilder()
                             .setTitle('Session Full')
-                            .setDescription(`Thank you South Florida for getting us full! Keep trying to join to experience some immersive roleplays. We got full <t:${Math.floor(Date.now() / 1000)}:R>.`)
+                            .setDescription(`Thank you Vermont for getting us full! Keep trying to join to experience some immersive roleplays. We got full <t:${Math.floor(Date.now() / 1000)}:R>.`)
                             .setColor('#018f1b')
                             .setAuthor({ name: `@${user.username}`, iconURL: user.displayAvatarURL() })
                             .setImage(bannerFor('full'))
@@ -350,6 +350,7 @@ module.exports = {
 		}
 	}
 }
+
 
 
 
