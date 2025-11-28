@@ -1,8 +1,8 @@
-# South Florida Roleplay Discord Bot (Python)
+# Vermont State Roleplay Discord Bot (JavaScript)
 
-Production-ready Python Discord bot for South Florida Roleplay. Includes ticket management (panel, open, claim/unclaim, rename, close with transcripts) and session utilities (start, full, shutdown, boost, poll with vote tracking). Ticket-related images are simplified; session commands support per-command image URLs.
+Production-ready Javascript Discord bot for Vermont State Roleplay. Includes ticket management (panel, open, claim/unclaim, rename, close with transcripts) and session utilities (start, full, shutdown, boost, poll with vote tracking). Ticket-related images are simplified; session commands support per-command image URLs.
 
-## Requirements
+## Requirements (Bot is not python anymore, use javascript to run)
 
 - Python: 3.10+ (3.11 recommended)
 - `pip` for dependency management
@@ -322,5 +322,6 @@ Notes:
 - Transcript generation failures: ensure the bot can read message history and attach files
 
 ## License
+
 
 Proprietary codebase; no license headers added per request.
