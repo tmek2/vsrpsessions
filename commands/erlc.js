@@ -3,6 +3,7 @@ const axios = require('axios');
 const { requireRole } = require('../utils/roleGate');
 
 const PRC_KEY = process.env.PRC_KEY || '';
+const ERLC_ENABLED = String(process.env.ERLC_ENABLED || 'true').toLowerCase() === 'true';
 const prc = axios.create({ baseURL: 'https://api.policeroleplay.community/v1/server', headers: { 'server-key': PRC_KEY, Accept: '*/*', 'Content-Type': 'application/json' }, timeout: 10000 });
 
 function envRole(sub) {
@@ -59,6 +60,10 @@ module.exports = {
     ),
 
   async execute(interaction) {
+    if (!ERLC_ENABLED) {
+      try { await interaction.reply({ content: 'ER:LC commands are disabled.', flags: MessageFlags.Ephemeral }); } catch {}
+      return;
+    }
     const sub = interaction.options.getSubcommand();
     const globalRoles = process.env.ERLC_REQUIRED_ROLE_IDS || '';
     const subRoles = envRole(sub) || '';
