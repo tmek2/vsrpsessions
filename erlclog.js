@@ -4,6 +4,7 @@ const { createEmbed } = require('./utils/embedBuilder');
 const { erlcEmoji } = require('./utils/emoji');
 
 const PRC_KEY = process.env.PRC_KEY || '';
+const ERLC_ENABLED = String(process.env.ERLC_ENABLED || 'true').toLowerCase() === 'true';
 const ERLC_TIMEOUT_MS = Number(process.env.ERLC_TIMEOUT_MS || 8000);
 const ERLC_EMBED_COLOR = process.env.ERLC_EMBED_COLOR || '#4c79eb';
 const ERLC_JOIN_COLOR = process.env.ERLC_JOIN_COLOR || '#30c331';
@@ -326,6 +327,10 @@ async function pollGenericList(client, key, path, title, iconKey, limit = 20, fo
 
 function start(client) {
   try {
+    if (!ERLC_ENABLED) {
+      console.log('ER:LC logger disabled by environment.');
+      return;
+    }
     if (!PRC_KEY) {
       console.warn('ER:LC logger disabled: PRC_KEY not set.');
       return;
