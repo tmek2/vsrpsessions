@@ -82,6 +82,7 @@ const TOKEN = process.env.DISCORD_TOKEN || process.env.TOKEN;
 const MONGO_URI = process.env.MONGO_URI || '';
 const MONGO_DB_NAME = process.env.MONGO_DB_NAME || '';
 const PRC_KEY = process.env.PRC_KEY || '';
+const erlcEnabled = String(process.env.ERLC_ENABLED || 'true').toLowerCase() === 'true';
 
 if (!TOKEN) {
   console.error('DISCORD_TOKEN is missing. Set it in your environment.');
@@ -119,17 +120,15 @@ client.config = { PRC_KEY };
   client.once(Events.ClientReady, async () => {
     console.log(`Logged in as ${client.user.tag}`);
     try {
-    await client.application.commands.set([
-      // Utilities
+    const appCommands = [
       ping.data,
       say.data,
       reminder.data,
       dash.data,
-      // ER:LC consolidated
-      erlc.data,
-      // Put sessions last
+      ...(erlcEnabled ? [erlc.data] : []),
       sessions.data
-    ]);
+    ];
+    await client.application.commands.set(appCommands);
       console.log('Registered application commands.');
     } catch (err) {
       console.error('Failed to register commands:', err);
@@ -137,8 +136,12 @@ client.config = { PRC_KEY };
 
     // Start ER:LC logging (requires PRC_KEY and channel IDs)
     try {
-      erlcLog.start(client);
-      console.log('ER:LC logging initialized.');
+      if (erlcEnabled) {
+        erlcLog.start(client);
+        console.log('ER:LC logging initialized.');
+      } else {
+        console.log('ER:LC disabled by environment.');
+      }
     } catch (e) {
       console.warn('Failed to start ER:LC logging:', e?.message || e);
     }
@@ -225,8 +228,12 @@ client.on('interactionCreate', async (interaction) => {
         await say.execute(interaction, client);
         await logCommandUsage();
       } else if (interaction.commandName === 'erlc') {
-        await erlc.execute(interaction, client);
-        await logCommandUsage();
+        if (!erlcEnabled) {
+          try { await interaction.reply({ content: 'ER:LC commands are disabled.', flags: MessageFlags.Ephemeral }); } catch {}
+        } else {
+          await erlc.execute(interaction, client);
+          await logCommandUsage();
+        }
       }
       return;
     }
