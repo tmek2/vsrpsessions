@@ -201,7 +201,14 @@ async function setStatus(client, status) {
 
     panelStatus = status;
     const row = buildComponents(status);
-    await msg.edit({ components: [row] }).catch(() => {});
+    if (status === 'offline') {
+      const e1 = buildTopImageEmbed();
+      const e2 = buildScheduleEmbed();
+      const e3 = buildStatsEmbed({ players: 0, maxPlayers: 40, staff: 0, queue: 0, timestamp: Date.now() });
+      await msg.edit({ embeds: [e1, e2, e3], components: [row] }).catch(() => {});
+    } else {
+      await msg.edit({ components: [row] }).catch(() => {});
+    }
     try {
       state.status = status;
       state.updatedAt = new Date();
